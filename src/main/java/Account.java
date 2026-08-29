@@ -5,6 +5,7 @@ public class Account{
     private double balance;
     private String accountType;
     private String status;
+    private int pin;
 
     public Account(int accountNumber, String name, int age, double initialBalance, String accountType){
         this.accountNumber=accountNumber;
@@ -21,11 +22,11 @@ public class Account{
         this.status="Active";
     }
     public boolean deposit(double amount){
-        if(amount<=0){
-            return false;
+        if(status.equals("Active") && amount>0){
+            balance+=amount;
+            return true;
         }
-        balance+=amount;
-        return true;
+        return false;
     }
 
     public boolean withdraw(double amount) {
@@ -66,5 +67,34 @@ public class Account{
 
     public void setAge(int age){
         this.age=age;
+    }
+    boolean setPin(int pin) {
+        if (pin >= 1000 && pin <= 9999) {
+            this.pin = pin;
+            return true;
+        }
+        return false;
+    }
+    boolean verifyPin(int pin) {
+        return this.pin != 0 && this.pin == pin;
+    }
+
+    boolean hasPin() {
+        return pin != 0;
+    }
+
+    boolean closeAccount() {
+        if (status.equals("Active")) {
+            status = "Inactive";
+            return true;
+        }
+        return false;
+    }
+    boolean reopenAccount() {
+        if (status.equals("Inactive")) {
+            status = "Active";
+            return true;
+        }
+        return false;
     }
 }
