@@ -7,19 +7,26 @@ public class Account{
     private String status;
     private int pin;
 
+    private static final double MIN_BALANCE_SAVINGS=500.0;
+    private static final double MIN_BALANCE_CURRENT=1000.0;
+    private static final int MIN_AGE=18;
+    private static final int MIN_PIN=1000;
+    private static final int MAX_PIN=9999;
+
     public Account(int accountNumber, String name, int age, double initialBalance, String accountType){
         this.accountNumber=accountNumber;
         this.name=name;
-        this.age= (age>=18) ? age : 18;
+        this.age= (age>=MIN_AGE) ? age : MIN_AGE;
         if(accountType.equalsIgnoreCase("current")) {
             this.accountType = accountType;
-            this.balance=(initialBalance<1000.0) ? 1000.0 : initialBalance;
+            this.balance=(initialBalance<MIN_BALANCE_CURRENT) ? MIN_BALANCE_CURRENT : initialBalance;
         }
         else {
             this.accountType = "Savings";
-            this.balance=(initialBalance<1000.0) ? 1000.0 : initialBalance;
+            this.balance=(initialBalance<MIN_BALANCE_SAVINGS) ? MIN_BALANCE_SAVINGS : initialBalance;
         }
         this.status="Active";
+        this.pin=0;
     }
     public boolean deposit(double amount){
         if(status.equals("Active") && amount>0){
@@ -69,7 +76,7 @@ public class Account{
         this.age=age;
     }
     boolean setPin(int pin) {
-        if (pin >= 1000 && pin <= 9999) {
+        if (pin >= MIN_PIN && pin <= MAX_PIN) {
             this.pin = pin;
             return true;
         }
@@ -83,15 +90,18 @@ public class Account{
         return pin != 0;
     }
 
+    boolean isActive() {
+        return status.equals("Active");
+    }
     boolean closeAccount() {
-        if (status.equals("Active")) {
+        if (isActive()) {
             status = "Inactive";
             return true;
         }
         return false;
     }
     boolean reopenAccount() {
-        if (status.equals("Inactive")) {
+        if (!isActive()) {
             status = "Active";
             return true;
         }
