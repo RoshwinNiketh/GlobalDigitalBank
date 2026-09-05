@@ -19,11 +19,27 @@ public class Account{
             throw new IllegalArgumentException("Age must be at least " + MIN_AGE);
         }
 
-        if (accountType == null || (!accountType.equalsIgnoreCase("Savings") && !accountType.equalsIgnoreCase("Current"))) {
-            throw new IllegalArgumentException("Account type must be 'Savings' or 'Current'");
+        if (accountType == null
+                || (!accountType.equalsIgnoreCase("Savings")
+                && !accountType.equalsIgnoreCase("Current")
+                && !accountType.equalsIgnoreCase("Fixed_Deposit")
+                && !accountType.equalsIgnoreCase("Salary"))) {
+
+            throw new IllegalArgumentException(
+                    "Account type must be Savings, Current, Fixed_Deposit, or Salary"
+            );
         }
 
-        double minBal = accountType.equalsIgnoreCase("Current") ? MIN_BALANCE_CURRENT : MIN_BALANCE_SAVINGS;
+        double minBal;
+
+        if (accountType.equalsIgnoreCase("Current")) {
+            minBal = MIN_BALANCE_CURRENT;
+        } else if (accountType.equalsIgnoreCase("Savings")) {
+            minBal = MIN_BALANCE_SAVINGS;
+        } else {
+            minBal = 0.0;
+        }
+
         if (initialBalance < minBal) {
             throw new IllegalArgumentException("Initial balance for " + accountType + " account must be at least Rs." + minBal);
         }
@@ -32,7 +48,17 @@ public class Account{
         this.name = name;
         this.age = age;
         this.balance = initialBalance;
-        this.accountType = accountType.equalsIgnoreCase("Current") ? "Current" : "Savings";
+
+        if (accountType.equalsIgnoreCase("Current")) {
+            this.accountType = "Current";
+        } else if (accountType.equalsIgnoreCase("Savings")) {
+            this.accountType = "Savings";
+        } else if (accountType.equalsIgnoreCase("Fixed_Deposit")) {
+            this.accountType = "Fixed Deposit";
+        } else {
+            this.accountType = "Salary";
+        }
+
         this.status = "Active";
         this.pin =null;
     }
@@ -81,8 +107,26 @@ public class Account{
         return this.pin != null;
     }
 
-    private double getMinimumBalance() {
-        return this.accountType.equalsIgnoreCase("Current") ? MIN_BALANCE_CURRENT : MIN_BALANCE_SAVINGS;
+    protected double getMinimumBalance() {
+        if (accountType.equalsIgnoreCase("Current")) {
+            return MIN_BALANCE_CURRENT;
+        }
+
+        if (accountType.equalsIgnoreCase("Savings")) {
+            return MIN_BALANCE_SAVINGS;
+        }
+
+        return 0.0;
+    }
+
+    protected final void creditBalance(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException(
+                    "Credit amount must be positive."
+            );
+        }
+
+        balance += amount;
     }
 
     boolean isActive() {
