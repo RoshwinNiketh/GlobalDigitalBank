@@ -76,10 +76,12 @@ public class TestAccountEnhanced {
         Account acc5=new Account(accNo,name,age,balance,accType);
         acc5.setPin(pin);
         System.out.print("Initial: "); ob.display(acc5.getAccountNumber(),acc5.getName(),acc5.getAge(),acc5.getAccountType(),acc5.getBalance(),acc5.getStatus(),acc5.hasPin());
-        System.out.println("Withdrawing Rs.200.0: "+((acc5.withdraw(200.0))?"SUCCESS":"FAILED"));
+        System.out.println("Withdrawing Rs.200.0: ");
+        acc5.withdraw(200.0);
         System.out.println("New balance: "+acc5.getBalance());
         System.out.print("After withdrawal: "); ob.display(acc5.getAccountNumber(),acc5.getName(),acc5.getAge(),acc5.getAccountType(),acc5.getBalance(),acc5.getStatus(),acc5.hasPin());
-        System.out.println("Withdrawing Rs.900.0: "+((acc5.withdraw(900.0))?"SUCCESS":"FAILED"));
+        System.out.println("Withdrawing Rs.900.0: ");
+        acc5.withdraw(900.0);
         System.out.println("Current balance: "+acc5.getBalance());
 
         System.out.println("\n>>>Test 6.Account Status Management (pin=0)");
