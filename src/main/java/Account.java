@@ -93,6 +93,7 @@ public class Account{
 
         this.balance -= amount;
     }
+
     public void setPin(int pin) throws IllegalArgumentException{
         if (pin < MIN_PIN || pin > MAX_PIN) {
             throw new IllegalArgumentException("PIN must be a valid 4-digit number (1000-9999).");
@@ -127,6 +128,34 @@ public class Account{
         }
 
         balance += amount;
+    }
+
+    protected final void validateWithdrawalRequest(double amount)
+            throws InvalidAmountException,
+            InactiveAccountException,
+            InvalidPinException {
+
+        validateActive();
+
+        if (!hasPin()) {
+            throw new InvalidPinException(
+                    "PIN has not been set for this account."
+            );
+        }
+
+        if (!verifyPin(pin)) {
+            throw new InvalidPinException("Incorrect PIN entered.");
+        }
+
+        if (amount <= 0) {
+            throw new InvalidAmountException(
+                    "Withdrawal amount must be greater than zero."
+            );
+        }
+    }
+
+    protected final void debitBalance(double amount) {
+        balance -= amount;
     }
 
     boolean isActive() {

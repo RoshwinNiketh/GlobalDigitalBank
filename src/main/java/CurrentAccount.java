@@ -26,4 +26,23 @@ public class CurrentAccount extends Account {
 
         this.overdraftLimit = overdraftLimit;
     }
+
+    @Override
+    public void withdraw(double amount)
+            throws InvalidAmountException,
+            InsufficientBalanceException,
+            MinimumBalanceViolationException,
+            InactiveAccountException,
+            InvalidPinException {
+
+        validateWithdrawalRequest(amount);
+
+        if (amount > getBalance() + overdraftLimit) {
+            throw new InsufficientBalanceException(
+                    "Withdrawal exceeds the available balance and overdraft limit."
+            );
+        }
+
+        debitBalance(amount);
+    }
 }

@@ -3,10 +3,22 @@ public class TestAccountSubclasses {
     public static void main(String[] args) {
 
         System.out.println(
-                "=== Activity 7: Account Subclasses Test ==="
+                "=== Activity 8: Polymorphism Test ==="
         );
 
-        SavingsAccount savings = new SavingsAccount(
+        testSavingsWithdrawal();
+        testCurrentOverdraft();
+        testCurrentOverdraftExceeded();
+        testFixedDepositWithdrawal();
+
+        System.out.println(
+                "All polymorphic behaviors verified!"
+        );
+    }
+
+    private static void testSavingsWithdrawal() {
+
+        Account account = new SavingsAccount(
                 2001,
                 "Aarav Sharma",
                 25,
@@ -15,7 +27,36 @@ public class TestAccountSubclasses {
                 4.0
         );
 
-        CurrentAccount current = new CurrentAccount(
+        account.setPin(1234);
+
+        try {
+            account.withdraw(9500.0);
+
+            System.out.println(
+                    "[Savings] Withdraw 9500 "
+                            + "(breaches min balance 1000): "
+                            + "FAILED"
+            );
+
+        } catch (MinimumBalanceViolationException e) {
+            System.out.println(
+                    "[Savings] Withdraw 9500 "
+                            + "(breaches min balance 1000): "
+                            + "Caught MinimumBalanceViolationException [PASS]"
+            );
+
+        } catch (AccountException e) {
+            System.out.println(
+                    "[Savings] Unexpected exception: "
+                            + e.getClass().getSimpleName()
+                            + " [FAILED]"
+            );
+        }
+    }
+
+    private static void testCurrentOverdraft() {
+
+        Account account = new CurrentAccount(
                 2002,
                 "Meera Patel",
                 30,
@@ -23,50 +64,93 @@ public class TestAccountSubclasses {
                 25000.0
         );
 
-        FixedDepositAccount fixedDeposit =
-                new FixedDepositAccount(
-                        2003,
-                        "Rohan Singh",
-                        35,
-                        10000.0,
-                        12,
-                        6.5
+        account.setPin(1234);
+
+        try {
+            account.withdraw(15000.0);
+
+            if (account.getBalance() == -5000.0) {
+                System.out.println(
+                        "[Current] Withdraw with Overdraft "
+                                + "(Balance goes to -5000): "
+                                + "SUCCESS [PASS]"
                 );
+            } else {
+                System.out.println(
+                        "[Current] Incorrect balance: Rs."
+                                + account.getBalance()
+                                + " [FAILED]"
+                );
+            }
 
-        SalaryAccount salary = new SalaryAccount(
-                2004,
-                "Priya Nair",
+        } catch (AccountException e) {
+            System.out.println(
+                    "[Current] Overdraft withdrawal failed: "
+                            + e.getMessage()
+                            + " [FAILED]"
+            );
+        }
+    }
+
+    private static void testCurrentOverdraftExceeded() {
+
+        Account account = new CurrentAccount(
+                2003,
+                "Riya Shah",
                 28,
-                5000.0,
-                "Infosys"
+                10000.0,
+                25000.0
         );
 
-        System.out.printf(
-                "Savings Account Created: Balance Rs %.1f"
-                        + " | Min Balance: Rs %.1f%n",
-                savings.getBalance(),
-                savings.getMinBalance()
+        account.setPin(1234);
+
+        try {
+            account.withdraw(36000.0);
+
+            System.out.println(
+                    "[Current] Withdraw exceeding Overdraft "
+                            + "(exceeds -25000): FAILED"
+            );
+
+        } catch (InsufficientBalanceException e) {
+            System.out.println(
+                    "[Current] Withdraw exceeding Overdraft "
+                            + "(exceeds -25000): "
+                            + "Caught InsufficientBalanceException [PASS]"
+            );
+
+        } catch (AccountException e) {
+            System.out.println(
+                    "[Current] Unexpected exception: "
+                            + e.getClass().getSimpleName()
+                            + " [FAILED]"
+            );
+        }
+    }
+
+    private static void testFixedDepositWithdrawal() {
+
+        Account account = new FixedDepositAccount(
+                2004,
+                "Rohan Singh",
+                35,
+                10000.0,
+                12,
+                6.5
         );
 
-        System.out.printf(
-                "Current Account Created: Overdraft Limit Rs %.1f%n",
-                current.getOverdraftLimit()
-        );
+        try {
+            account.withdraw(1000.0);
 
-        System.out.printf(
-                "Fixed Deposit Created: Tenure %d months"
-                        + " | Interest: %.1f%%%n",
-                fixedDeposit.getTenureMonths(),
-                fixedDeposit.getInterestRate()
-        );
+            System.out.println(
+                    "[FixedDeposit] Withdraw attempt: FAILED"
+            );
 
-        System.out.printf(
-                "Salary Account Created: Employer %s%n",
-                salary.getEmployerName()
-        );
-
-        System.out.println(
-                "All subclasses instantiated successfully!"
-        );
+        } catch (AccountException e) {
+            System.out.println(
+                    "[FixedDeposit] Withdraw attempt: "
+                            + "Caught AccountException [PASS]"
+            );
+        }
     }
 }

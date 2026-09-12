@@ -42,6 +42,16 @@ public class FixedDepositAccount extends Account {
                 * Math.pow(1.0 + interestRate / 100.0, tenureInYears);
     }
 
+    @Override
+    public void withdraw(double amount)
+            throws InvalidAmountException {
+
+        throw new InvalidAmountException(
+                "Premature withdrawals are not permitted "
+                        + "on Fixed Deposit accounts before maturity."
+        );
+    }
+
     public int getTenureMonths() {
         return tenureMonths;
     }

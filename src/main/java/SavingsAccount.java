@@ -52,6 +52,24 @@ public class SavingsAccount extends Account {
         return minBalance;
     }
 
+    @Override
+    public void withdraw(double amount)
+            throws InvalidAmountException,
+            InsufficientBalanceException,
+            MinimumBalanceViolationException,
+            InactiveAccountException,
+            InvalidPinException {
+
+        if (getBalance() - amount < minBalance) {
+            throw new MinimumBalanceViolationException(
+                    "Withdrawal would violate the minimum balance of Rs."
+                            + minBalance
+            );
+        }
+
+        super.withdraw(amount);
+    }
+
     public double getInterestRate() {
         return interestRate;
     }
