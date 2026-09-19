@@ -17,16 +17,6 @@ public abstract class Account implements IAccount {
     protected String openingDate;
     protected int tenureYears;
 
-    // ============================================================
-    // 📝 STEP 2.1: Daily Transfer Tracking Fields
-    //
-    // INSTRUCTIONS:
-    //   1. dailyTransferTotal holds the sum of all transfers sent today (starts at 0.0).
-    //   2. lastTransferDate records when that total was last updated (starts at now).
-    //
-    // HINT: These are declared for you because the getters below need them to compile; Steps 4-7 read and update them.
-    // ============================================================
-    // TODO: study these two fields — every daily-limit method in Steps 4-7 works with them
     protected double dailyTransferTotal = 0.0;
     protected LocalDateTime lastTransferDate = LocalDateTime.now();
 
@@ -125,40 +115,72 @@ public abstract class Account implements IAccount {
     @Override public void setTenureYears(int tenureYears) { this.tenureYears = Math.max(0, tenureYears); }
 
     public double getDailyTransferLimit() {
-        return AccountRulesEngine.getInstance()
-                .getDailyTransferLimit(getAccountType(), getTenureYears());
+        return AccountRulesEngine.getInstance().getDailyTransferLimit(getAccountType(), getTenureYears());
     }
 
     public double getRemainingDailyTransferLimit() {
         resetDailyTransferIfNeeded();
-
-        return Math.max(
-                0.0,
-                getDailyTransferLimit() - dailyTransferTotal);
+        return Math.max(0.0, getDailyTransferLimit() - dailyTransferTotal);
     }
 
     public boolean canTransfer(double amount) {
         resetDailyTransferIfNeeded();
-
-        return dailyTransferTotal + amount <= getDailyTransferLimit();
+        return (dailyTransferTotal + amount) <= getDailyTransferLimit();
     }
 
     public void updateDailyTransferTotal(double amount) {
         resetDailyTransferIfNeeded();
-
         dailyTransferTotal += amount;
         lastTransferDate = LocalDateTime.now();
     }
 
     public void resetDailyTransferIfNeeded() {
-        LocalDateTime now = LocalDateTime.now();
-
-        if (!lastTransferDate.toLocalDate().equals(now.toLocalDate())) {
+        if (lastTransferDate == null || !lastTransferDate.toLocalDate().equals(LocalDateTime.now().toLocalDate())) {
             dailyTransferTotal = 0.0;
-            lastTransferDate = now;
+            lastTransferDate = LocalDateTime.now();
         }
     }
 
     public double getDailyTransferTotal() { return dailyTransferTotal; }
     public LocalDateTime getLastTransferDate() { return lastTransferDate; }
+
+    // ============================================================
+    // Helper: buildTransaction (COMPLETE — provided for convenience)
+    // ============================================================
+    protected Transaction buildTransaction(TransactionType type, double amount, 
+                                           int fromAcc, int toAcc, String desc) {
+        return new Transaction(
+            Transaction.generateId(),
+            LocalDateTime.now(),
+            this.accountNumber,
+            type, amount, this.balance, "SUCCESS",
+            desc, fromAcc, toAcc
+        );
+    }
+
+    public Transaction depositWithTransaction(double amount)
+            throws AccountException {
+
+        deposit(amount);
+
+        return buildTransaction(
+                TransactionType.DEPOSIT,
+                amount,
+                0,
+                0,
+                "Deposit of Rs. " + amount);
+    }
+
+    public Transaction withdrawWithTransaction(double amount, int pin)
+            throws AccountException {
+
+        withdraw(amount, pin);
+
+        return buildTransaction(
+                TransactionType.WITHDRAW,
+                amount,
+                0,
+                0,
+                "Withdrawal of Rs. " + amount);
+    }
 }
