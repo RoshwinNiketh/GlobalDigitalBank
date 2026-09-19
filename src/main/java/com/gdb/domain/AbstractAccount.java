@@ -2,10 +2,6 @@ package com.gdb.domain;
 
 import com.gdb.exceptions.*;
 
-/**
- * AbstractAccount - Defines shared template methods and forces subclasses to implement processDebit.
- * The shared fields and concrete methods below are moved up unchanged from the Activity 7/8 Account class.
- */
 public abstract class AbstractAccount {
     protected String accountNumber;
     protected String name;
@@ -45,13 +41,9 @@ public abstract class AbstractAccount {
     }
 
     public void withdraw(double amount, String enteredPin) throws AccountException {
-        if (!validatePin(enteredPin))
-            throw new InvalidPinException("Invalid PIN entered");
-        if (!"ACTIVE".equals(status))
-            throw new InactiveAccountException("Account is not active");
-        if (amount <= 0)
-            throw new InvalidAmountException("Withdrawal amount must be positive");
-
+        if (!validatePin(enteredPin)) throw new InvalidPinException("Invalid PIN entered");
+        if (!"ACTIVE".equalsIgnoreCase(this.status)) throw new InactiveAccountException("Account is not active");
+        if (amount <= 0) throw new InvalidAmountException("Withdrawal amount must be positive");
         processDebit(amount);
     }
 
