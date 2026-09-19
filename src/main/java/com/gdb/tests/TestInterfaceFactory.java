@@ -42,7 +42,7 @@ public class TestInterfaceFactory {
                 "CURRENT", "CUR1001", "Priya Patel",
                 34, 2000.0, "ACTIVE", "5678");
 
-        current.withdraw(27000.0, "5678"); 
+        current.withdraw(27000.0, "5678");
 
         boolean overdraftLimitEnforced = false;
         try {
