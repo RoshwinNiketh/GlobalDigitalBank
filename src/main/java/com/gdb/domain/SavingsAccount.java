@@ -3,15 +3,20 @@ package com.gdb.domain;
 import com.gdb.exceptions.*;
 
 public class SavingsAccount extends AbstractAccount {
-    private double minBalance = 1000.0;
-    private double interestRate = 4.0;
+    private int tenureYears;
+    private double minBalance;
+    private double interestRate;
 
-    public SavingsAccount(String accountNumber, String name, int age, double balance, String status, String pin) {
+    public SavingsAccount(String accountNumber, String name, int age, double balance, String status, String pin, int tenureYears) {
         super(accountNumber, name, age, balance, "SAVINGS", status, pin);
+        this.tenureYears = tenureYears;
+        this.minBalance = AccountRulesEngine.getSavingsMinBalance(tenureYears);
+        this.interestRate = AccountRulesEngine.getSavingsInterestRate(tenureYears);
     }
 
     public SavingsAccount(String accountNumber, String name, int age, double balance, String status, String pin, double minBalance, double interestRate) {
         super(accountNumber, name, age, balance, "SAVINGS", status, pin);
+        this.tenureYears = 0;
         this.minBalance = minBalance;
         this.interestRate = interestRate;
     }
@@ -29,6 +34,7 @@ public class SavingsAccount extends AbstractAccount {
         this.balance += interest;
     }
 
+    public int getTenureYears() { return tenureYears; }
     public double getMinBalance() { return minBalance; }
     public double getInterestRate() { return interestRate; }
 }

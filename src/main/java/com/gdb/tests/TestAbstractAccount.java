@@ -20,7 +20,7 @@ public class TestAbstractAccount {
 
     private static AbstractAccount[] createPortfolio() {
         SavingsAccount savings = new SavingsAccount(
-                "SAV1001", "Roshwin Niketh", 19, 10000.0, "ACTIVE", "1234");
+                "SAV1001", "Roshwin Niketh", 19, 10000.0, "ACTIVE", "1234",4);
         CurrentAccount current = new CurrentAccount(
                 "CUR1001", "Ashwanth", 25, 5000.0, "ACTIVE", "5678", 10000.0);
         SalaryAccount salary = new SalaryAccount(

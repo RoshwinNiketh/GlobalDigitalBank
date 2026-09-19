@@ -2,10 +2,14 @@ package com.gdb.domain;
 
 public class AccountFactory {
     public static IAccount createAccount(String type, String accNum, String name, int age, double balance, String status, String pin) {
+        return createAccount(type, accNum, name, age, balance, status, pin, 0);
+    }
+
+    public static IAccount createAccount(String type, String accNum, String name, int age, double balance, String status, String pin, int tenureYears) {
         if (type == null) return null;
         switch (type.toUpperCase()) {
             case "SAVINGS":
-                return new SavingsAccount(accNum, name, age, balance, status, pin, 1000.0, 4.0);
+                return new SavingsAccount(accNum, name, age, balance, status, pin, tenureYears);
             case "CURRENT":
                 return new CurrentAccount(accNum, name, age, balance, status, pin, 25000.0);
             case "FIXED_DEPOSIT":
