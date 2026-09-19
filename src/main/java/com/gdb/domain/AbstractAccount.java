@@ -2,7 +2,7 @@ package com.gdb.domain;
 
 import com.gdb.exceptions.*;
 
-public abstract class AbstractAccount {
+public abstract class AbstractAccount implements IAccount {
     protected String accountNumber;
     protected String name;
     protected int age;
