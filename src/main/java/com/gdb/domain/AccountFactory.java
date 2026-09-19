@@ -1,24 +1,34 @@
 package com.gdb.domain;
 
+import com.gdb.exceptions.*;
+
+/**
+ * AccountFactory Creational Pattern supporting SAVINGS, CURRENT, and FIXEDDEPOSIT creation with dynamic rules.
+ */
 public class AccountFactory {
-    public static IAccount createAccount(String type, String accNum, String name, int age, double balance, String status, String pin) {
-        return createAccount(type, accNum, name, age, balance, status, pin, 0);
+
+    public static IAccount createAccount(String accountType, int accountNumber, String name, int age, double initialBalance)
+            throws AccountException {
+        return createAccount(accountType, accountNumber, name, age, initialBalance, 0);
     }
 
-    public static IAccount createAccount(String type, String accNum, String name, int age, double balance, String status, String pin, int tenureYears) {
-        if (type == null) return null;
-        switch (type.toUpperCase()) {
+    public static IAccount createAccount(String accountType, int accountNumber, String name, int age, double initialBalance, int tenureYears)
+            throws AccountException {
+        if (accountType == null || accountType.trim().isEmpty()) {
+            throw new InvalidAccountTypeException("Unknown account type: " + accountType);
+        }
+        
+        String typeUpper = accountType.trim().toUpperCase();
+        
+        switch (typeUpper) {
             case "SAVINGS":
-                return new SavingsAccount(accNum, name, age, balance, status, pin, tenureYears);
+                return new SavingsAccount(accountNumber, name, age, initialBalance, tenureYears);
             case "CURRENT":
-                return new CurrentAccount(accNum, name, age, balance, status, pin, 25000.0);
-            case "FIXED_DEPOSIT":
-            case "FD":
-                return new FixedDepositAccount(accNum, name, age, balance, status, pin, 12, 6.5);
-            case "SALARY":
-                return new SalaryAccount(accNum, name, age, balance, status, pin, "TechCorp");
+                return new CurrentAccount(accountNumber, name, age, initialBalance, tenureYears);
+            case "FIXEDDEPOSIT":
+                return new FixedDepositAccount(accountNumber, name, age, initialBalance, tenureYears);
             default:
-                throw new IllegalArgumentException("Unknown account type: " + type);
+                throw new InvalidAccountTypeException("Unknown account type: " + accountType);
         }
     }
 }
