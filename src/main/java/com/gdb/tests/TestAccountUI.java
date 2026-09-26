@@ -8,26 +8,49 @@ import com.gdb.service.AccountService;
 /** Integration driver confirming the UI's AccountService endpoints. */
 public class TestAccountUI {
     public static void main(String[] args) throws Exception {
+        printHeader();
+        runAccountServiceChecks();
+    }
+
+    private static void printHeader() {
         System.out.println("=".repeat(60));
         System.out.println("  ACTIVITY 20 — ACCOUNT UI & INTEGRATION TEST");
         System.out.println("=".repeat(60));
+    }
 
+    private static void runAccountServiceChecks() throws Exception {
         AccountService service = new AccountService(
                 new TransactionLogger(new MemoryLogDestination()));
-
         IAccount account = service.openAccount(
                 "SAVINGS", "Alice Cooper", 28, 20000.0);
         account.setPin(1234);
-        System.out.println("[UI TEST] Opened: " + account.getAccountInfo());
+        printOpenedAccount(account);
 
+        depositAndReport(service, account);
+        withdrawAndReport(service, account);
+        verifyTransactionHistory(service, account);
+    }
+
+    private static void printOpenedAccount(IAccount account) {
+        System.out.println("[UI TEST] Opened: " + account.getAccountInfo());
+    }
+
+    private static void depositAndReport(AccountService service, IAccount account)
+            throws Exception {
         service.deposit(account.getAccountNumber(), 5000.0);
         System.out.println("[UI TEST] Deposit Rs. 5000 | Balance: Rs. "
                 + account.getBalance());
+    }
 
+    private static void withdrawAndReport(AccountService service, IAccount account)
+            throws Exception {
         service.withdraw(account.getAccountNumber(), 3000.0, 1234);
         System.out.println("[UI TEST] Withdraw Rs. 3000 | Balance: Rs. "
                 + account.getBalance());
+    }
 
+    private static void verifyTransactionHistory(AccountService service,
+                                                 IAccount account) {
         int historyCount = service.getTransactionHistory().size();
         if (historyCount != 2 || account.getBalance() != 22000.0) {
             throw new AssertionError("Account service integration check failed");
