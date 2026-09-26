@@ -1,13 +1,15 @@
 package com.gdb.domain;
 
 import com.gdb.exceptions.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * Abstract class Account implementing default behavior for IAccount interface.
  * Encapsulates common state fields, customer tenure, and default validation routines.
  */
-public abstract class Account implements IAccount {
+public abstract class Account implements IAccount, Serializable {
+    private static final long serialVersionUID = 1L;
     protected int accountNumber;
     protected String accountHolderName;
     protected int age;
