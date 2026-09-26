@@ -21,6 +21,13 @@ public class TransferCommand implements TransactionCommand {
         this.pin = pin;
     }
 
+    /** Creates a command record for a transfer already executed by a service. */
+    public TransferCommand(IAccount from, IAccount to, double amount, int pin,
+                           Transaction transaction) {
+        this(from, to, amount, pin);
+        this.transaction = transaction;
+    }
+
     @Override
     public void execute() throws Exception {
         transaction = new TransferService().transferWithTransaction(
