@@ -10,31 +10,40 @@ import com.gdb.domain.Transaction;
 import com.gdb.exceptions.AccountException;
 import com.gdb.exceptions.InvalidPinException;
 import com.gdb.logging.TransactionLogger;
+import com.gdb.repository.AccountRepository;
+import com.gdb.repository.RepositoryFactory;
+import com.gdb.repository.TransactionRepository;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /** Coordinates account lifecycle, money movement, and transaction logging. */
 public class AccountService {
-    private final Map<Integer, IAccount> accounts;
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
     private final TransactionLogger logger;
     private final TransferService transferService;
-    private int nextAccountNumber = 1001;
 
     public AccountService(TransactionLogger logger) {
+        this(RepositoryFactory.getAccountRepository(),
+                RepositoryFactory.getTransactionRepository(), logger);
+    }
+
+    public AccountService(AccountRepository accountRepository,
+                          TransactionRepository transactionRepository,
+                          TransactionLogger logger) {
+        this.accountRepository = Objects.requireNonNull(accountRepository, "Account repository is required");
+        this.transactionRepository = Objects.requireNonNull(transactionRepository, "Transaction repository is required");
         this.logger = Objects.requireNonNull(logger, "Transaction logger is required");
-        this.accounts = new HashMap<>();
         this.transferService = new TransferService();
     }
 
     public IAccount openAccount(String type, String name, int age, double initialBalance)
             throws AccountException {
-        int accountNumber = nextAccountNumber++;
+        int accountNumber = accountRepository.nextAccountNumber();
         IAccount account = AccountFactory.createAccount(
                 type, accountNumber, name, age, initialBalance);
-        accounts.put(accountNumber, account);
+        accountRepository.save(account);
         return account;
     }
 
@@ -44,11 +53,14 @@ public class AccountService {
             throw new InvalidPinException("Incorrect PIN");
         }
         account.closeAccount();
+        accountRepository.update(account);
     }
 
     public Transaction deposit(int accountNumber, double amount) throws Exception {
         DepositCommand command = new DepositCommand(requireAccount(accountNumber), amount);
         command.execute();
+        accountRepository.update(requireAccount(accountNumber));
+        transactionRepository.save(command.getTransaction());
         logger.log(command);
         return command.getTransaction();
     }
@@ -57,6 +69,8 @@ public class AccountService {
         WithdrawCommand command = new WithdrawCommand(
                 requireAccount(accountNumber), amount, pin);
         command.execute();
+        accountRepository.update(requireAccount(accountNumber));
+        transactionRepository.save(command.getTransaction());
         logger.log(command);
         return command.getTransaction();
     }
@@ -69,16 +83,19 @@ public class AccountService {
                 from, to, amount, pin);
         TransferCommand command = new TransferCommand(
                 from, to, amount, pin, transaction);
+        accountRepository.update(from);
+        accountRepository.update(to);
+        transactionRepository.save(transaction);
         logger.log(command);
         return transaction;
     }
 
     public IAccount getAccount(int accountNumber) {
-        return accounts.get(accountNumber);
+        return accountRepository.findById(accountNumber);
     }
 
     public List<IAccount> getAllAccounts() {
-        return new ArrayList<>(accounts.values());
+        return accountRepository.findAll();
     }
 
     public List<TransactionCommand> getTransactionHistory() {
@@ -86,11 +103,19 @@ public class AccountService {
     }
 
     public int getNextAccountNumber() {
-        return nextAccountNumber;
+        return accountRepository.getNextAccountNumber();
+    }
+
+    public List<Transaction> getTransactionRecords() {
+        return transactionRepository.findAll();
+    }
+
+    public List<Transaction> getTransactionRecords(int accountNumber) {
+        return transactionRepository.findByAccount(accountNumber);
     }
 
     private IAccount requireAccount(int accountNumber) throws AccountException {
-        IAccount account = accounts.get(accountNumber);
+        IAccount account = accountRepository.findById(accountNumber);
         if (account == null) {
             throw new AccountException("Account not found: " + accountNumber);
         }
