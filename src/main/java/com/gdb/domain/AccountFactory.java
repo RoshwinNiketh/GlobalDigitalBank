@@ -21,6 +21,8 @@ public class AccountFactory {
         String typeUpper = accountType.trim().toUpperCase();
         
         switch (typeUpper) {
+            case "SALARY":
+                return new SalaryAccount(accountNumber, name, age, initialBalance, tenureYears);
             case "SAVINGS":
                 return new SavingsAccount(accountNumber, name, age, initialBalance, tenureYears);
             case "CURRENT":

@@ -80,7 +80,9 @@ public final class RepositoryFactory {
                 accountRepositoryInstance = new JdbcAccountRepository(getConnectionProvider());
             }
             if ("file".equals(mode)) {
-                throw new UnsupportedOperationException("File repositories are not implemented yet");
+                Properties settings = loadPersistenceProperties();
+                accountRepositoryInstance = new FileAccountRepository(settings.getProperty(
+                        "persistence.file.account.path", "data/accounts.csv"), true, 1001, backupCount(settings));
             }
             if (accountRepositoryInstance == null) accountRepositoryInstance = new InMemoryAccountRepository();
         }
@@ -94,7 +96,10 @@ public final class RepositoryFactory {
                 transactionRepositoryInstance = new JdbcTransactionRepository(getConnectionProvider());
             }
             if ("file".equals(mode)) {
-                throw new UnsupportedOperationException("File repositories are not implemented yet");
+                Properties settings = loadPersistenceProperties();
+                transactionRepositoryInstance = new FileTransactionRepository(settings.getProperty(
+                        "persistence.file.transaction.path", "data/transactions.csv"), settings.getProperty(
+                        "persistence.file.account.path", "data/accounts.csv"), true, backupCount(settings));
             }
             if (transactionRepositoryInstance == null) transactionRepositoryInstance = new InMemoryTransactionRepository();
         }
@@ -108,5 +113,10 @@ public final class RepositoryFactory {
         }
         accountRepositoryInstance = null;
         transactionRepositoryInstance = null;
+    }
+
+    private static int backupCount(Properties settings) {
+        return Boolean.parseBoolean(settings.getProperty("persistence.file.backup.enabled", "true"))
+                ? Integer.parseInt(settings.getProperty("persistence.file.backup.max", "5")) : 0;
     }
 }

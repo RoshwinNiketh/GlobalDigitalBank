@@ -90,6 +90,11 @@ public class AccountService {
         }
         TransferCommand command = new TransferCommand(
                 from, to, amount, pin, transaction);
+        if (transactionRepository instanceof com.gdb.repository.FileTransactionRepository files) {
+            transaction = files.transferAndRecord(fromAccountNumber, toAccountNumber, amount);
+            logger.log(new TransferCommand(from, to, amount, pin, transaction));
+            return transaction;
+        }
         accountRepository.update(from);
         accountRepository.update(to);
         transactionRepository.save(transaction);

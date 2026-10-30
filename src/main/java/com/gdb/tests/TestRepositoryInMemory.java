@@ -130,8 +130,8 @@ public class TestRepositoryInMemory {
     private static void testRepositoryFactory() {
         System.out.println("\n[TEST 4] Repository Factory Configuration:");
         String mode = RepositoryFactory.getPersistenceMode();
-        check("memory".equals(mode) || "jdbc".equals(mode),
-                "Persistence mode should be either memory or jdbc");
+        check("memory".equals(mode) || "jdbc".equals(mode) || "file".equals(mode),
+                "Persistence mode should be memory, jdbc, or file");
         if ("memory".equals(mode)) {
             check(RepositoryFactory.getAccountRepository() instanceof InMemoryAccountRepository,
                     "Memory mode should provide an in-memory account repository");
@@ -141,7 +141,7 @@ public class TestRepositoryInMemory {
                     "Factory should return a singleton account repository");
             System.out.println("  In-memory repositories created and cached.");
         } else {
-            System.out.println("  JDBC repositories are deferred to later activities.");
+            System.out.println("  Configured persistent backend: " + mode + "; in-memory checks use injected repositories.");
         }
         System.out.println("  Mode: " + mode);
         System.out.println("  -> PASSED");
