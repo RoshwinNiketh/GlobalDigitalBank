@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS accounts (
     pin INTEGER,
     opening_date TEXT NOT NULL,
     overdraft_used REAL DEFAULT 0,
-    interest_earned REAL DEFAULT 0
+    interest_earned REAL DEFAULT 0,
+    tenure_years INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS transactions (

@@ -112,6 +112,11 @@ public abstract class Account implements IAccount, Serializable {
     @Override public int getAccountNumber() { return accountNumber; }
     @Override public String getAccountHolderName() { return accountHolderName; }
     @Override public double getBalance() { return balance; }
+    public int getAge() { return age; }
+    public Integer getPin() { return pin; }
+    public void restoreOpeningDate(String openingDate) { this.openingDate = openingDate; }
+    /** Restores a persisted balance, which may be below the opening minimum after overdraft use. */
+    public void restoreBalance(double balance) { this.balance = balance; }
     @Override public String getOpeningDate() { return openingDate; }
     @Override public int getTenureYears() { return tenureYears; }
     @Override public void setTenureYears(int tenureYears) { this.tenureYears = Math.max(0, tenureYears); }

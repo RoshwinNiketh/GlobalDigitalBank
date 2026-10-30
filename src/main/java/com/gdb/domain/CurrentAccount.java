@@ -70,6 +70,7 @@ public class CurrentAccount extends Account {
     }
 
     public double getOverdraftUsed() { return overdraftUsed; }
+    public void setOverdraftUsed(double overdraftUsed) { this.overdraftUsed = Math.max(0.0, overdraftUsed); }
     public double getAvailableOverdraft() { return getOverdraftLimit() - overdraftUsed; }
 
     public void repayOverdraft(double amount) throws InvalidAmountException, InsufficientBalanceException {

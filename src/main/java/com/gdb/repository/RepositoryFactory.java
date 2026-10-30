@@ -64,9 +64,7 @@ public final class RepositoryFactory {
         if (accountRepositoryInstance == null) {
             String mode = getPersistenceMode();
             if ("jdbc".equals(mode)) {
-                getConnectionProvider();
-                throw new UnsupportedOperationException(
-                        "JDBC account repository is not implemented yet - coming in Activity 23");
+                accountRepositoryInstance = new JdbcAccountRepository(getConnectionProvider());
             }
             if ("file".equals(mode)) {
                 throw new UnsupportedOperationException("File repositories are not implemented yet");

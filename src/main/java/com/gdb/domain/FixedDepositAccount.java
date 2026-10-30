@@ -74,5 +74,6 @@ public class FixedDepositAccount extends Account {
 
     public String getMaturityDate() { return maturityDate; }
     public double getInterestEarned() { return interestEarned; }
+    public void setInterestEarned(double interestEarned) { this.interestEarned = Math.max(0.0, interestEarned); }
     public int getDaysToMaturity() { return 365; }
 }
