@@ -69,7 +69,7 @@ public final class RepositoryFactory {
             if ("file".equals(mode)) {
                 throw new UnsupportedOperationException("File repositories are not implemented yet");
             }
-            accountRepositoryInstance = new InMemoryAccountRepository();
+            if (accountRepositoryInstance == null) accountRepositoryInstance = new InMemoryAccountRepository();
         }
         return accountRepositoryInstance;
     }
@@ -78,14 +78,12 @@ public final class RepositoryFactory {
         if (transactionRepositoryInstance == null) {
             String mode = getPersistenceMode();
             if ("jdbc".equals(mode)) {
-                getConnectionProvider();
-                throw new UnsupportedOperationException(
-                        "JDBC transaction repository is not implemented yet - coming in Activity 24");
+                transactionRepositoryInstance = new JdbcTransactionRepository(getConnectionProvider());
             }
             if ("file".equals(mode)) {
                 throw new UnsupportedOperationException("File repositories are not implemented yet");
             }
-            transactionRepositoryInstance = new InMemoryTransactionRepository();
+            if (transactionRepositoryInstance == null) transactionRepositoryInstance = new InMemoryTransactionRepository();
         }
         return transactionRepositoryInstance;
     }

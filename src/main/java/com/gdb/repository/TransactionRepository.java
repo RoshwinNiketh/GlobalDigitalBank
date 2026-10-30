@@ -9,4 +9,7 @@ public interface TransactionRepository {
     List<Transaction> findByAccount(int accountNumber);
     List<Transaction> findAll();
     void clear();
+    default void transfer(int fromAccountNumber, int toAccountNumber, double amount) {
+        throw new UnsupportedOperationException("Atomic database transfers require a JDBC transaction repository");
+    }
 }

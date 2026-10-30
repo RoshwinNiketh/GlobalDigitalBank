@@ -95,7 +95,7 @@ public class AccountUI {
         double initialBalance = readDouble("Initial Balance: ");
         int pin = readInt("Set 4-digit PIN: ");
         IAccount account = service.openAccount(type, name, age, initialBalance);
-        account.setPin(pin);
+        service.setPin(account.getAccountNumber(), pin);
         System.out.println("SUCCESS: " + account.getAccountInfo());
         System.out.println("PIN set successfully.");
     }

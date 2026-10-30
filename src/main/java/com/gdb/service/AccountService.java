@@ -57,19 +57,21 @@ public class AccountService {
     }
 
     public Transaction deposit(int accountNumber, double amount) throws Exception {
-        DepositCommand command = new DepositCommand(requireAccount(accountNumber), amount);
+        IAccount account = requireAccount(accountNumber);
+        DepositCommand command = new DepositCommand(account, amount);
         command.execute();
-        accountRepository.update(requireAccount(accountNumber));
+        accountRepository.update(account);
         transactionRepository.save(command.getTransaction());
         logger.log(command);
         return command.getTransaction();
     }
 
     public Transaction withdraw(int accountNumber, double amount, int pin) throws Exception {
+        IAccount account = requireAccount(accountNumber);
         WithdrawCommand command = new WithdrawCommand(
-                requireAccount(accountNumber), amount, pin);
+                account, amount, pin);
         command.execute();
-        accountRepository.update(requireAccount(accountNumber));
+        accountRepository.update(account);
         transactionRepository.save(command.getTransaction());
         logger.log(command);
         return command.getTransaction();
@@ -81,6 +83,11 @@ public class AccountService {
         IAccount to = requireAccount(toAccountNumber);
         Transaction transaction = transferService.transferWithTransaction(
                 from, to, amount, pin);
+        if (transactionRepository instanceof com.gdb.repository.JdbcTransactionRepository jdbc) {
+            transaction = jdbc.transferAndRecord(fromAccountNumber, toAccountNumber, amount);
+            logger.log(new TransferCommand(from, to, amount, pin, transaction));
+            return transaction;
+        }
         TransferCommand command = new TransferCommand(
                 from, to, amount, pin, transaction);
         accountRepository.update(from);
@@ -92,6 +99,12 @@ public class AccountService {
 
     public IAccount getAccount(int accountNumber) {
         return accountRepository.findById(accountNumber);
+    }
+
+    public void setPin(int accountNumber, int pin) throws AccountException {
+        IAccount account = requireAccount(accountNumber);
+        account.setPin(pin);
+        accountRepository.update(account);
     }
 
     public List<IAccount> getAllAccounts() {
