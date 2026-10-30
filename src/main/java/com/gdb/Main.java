@@ -9,7 +9,11 @@ import com.gdb.ui.AccountUI;
 public class Main {
     public static void main(String[] args) {
         printStartupMessage();
-        launchAccountUI();
+        try {
+            launchAccountUI();
+        } finally {
+            com.gdb.repository.RepositoryFactory.reset();
+        }
     }
 
     private static void printStartupMessage() {

@@ -2,6 +2,7 @@ package com.gdb.repository;
 
 import com.gdb.db.ConnectionProvider;
 import com.gdb.db.JdbcConnectionProvider;
+import com.gdb.db.HikariConnectionProvider;
 import com.gdb.db.SchemaInitializer;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,14 +51,26 @@ public final class RepositoryFactory {
 
     public static synchronized ConnectionProvider getConnectionProvider() {
         if (connectionProviderInstance == null) {
-            Properties properties = loadPersistenceProperties();
-            String url = properties.getProperty("persistence.db.url", "jdbc:sqlite:gdb.db").trim();
-            String driver = properties.getProperty("persistence.db.driver", "org.sqlite.JDBC").trim();
-            ConnectionProvider provider = new JdbcConnectionProvider(url, driver);
-            SchemaInitializer.initialize(provider);
-            connectionProviderInstance = provider;
+            connectionProviderInstance = createConnectionProvider(loadPersistenceProperties());
         }
         return connectionProviderInstance;
+    }
+
+    /** Creates an initialized provider; the caller owns its shutdown. */
+    public static ConnectionProvider createConnectionProvider(Properties properties) {
+        boolean pooled = Boolean.parseBoolean(properties.getProperty("persistence.pool.enabled",
+                properties.getProperty("db.pool.enabled", "false")).trim());
+        ConnectionProvider provider = pooled ? new HikariConnectionProvider(properties)
+                : new JdbcConnectionProvider(
+                        properties.getProperty("persistence.db.url", "jdbc:sqlite:gdb.db").trim(),
+                        properties.getProperty("persistence.db.driver", "org.sqlite.JDBC").trim());
+        try {
+            SchemaInitializer.initialize(provider);
+            return provider;
+        } catch (RuntimeException exception) {
+            provider.shutdown();
+            throw exception;
+        }
     }
 
     public static synchronized AccountRepository getAccountRepository() {
