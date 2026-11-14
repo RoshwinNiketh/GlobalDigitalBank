@@ -19,7 +19,7 @@ public class TestAccountUI {
     }
 
     private static void runAccountServiceChecks() throws Exception {
-        AccountService service = new AccountService(
+        AccountService service = new AccountService(new com.gdb.repository.InMemoryAccountRepository(), new com.gdb.repository.InMemoryTransactionRepository(),
                 new TransactionLogger(new MemoryLogDestination()));
         IAccount account = service.openAccount(
                 "SAVINGS", "Alice Cooper", 28, 20000.0);

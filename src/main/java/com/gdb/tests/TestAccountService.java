@@ -32,7 +32,7 @@ public class TestAccountService {
     }
 
     private static AccountService createService() {
-        return new AccountService(new TransactionLogger(new MemoryLogDestination()));
+        return new AccountService(new com.gdb.repository.InMemoryAccountRepository(), new com.gdb.repository.InMemoryTransactionRepository(), new TransactionLogger(new MemoryLogDestination()));
     }
 
     private static IAccount[] openAccounts(AccountService service) throws Exception {

@@ -10,17 +10,17 @@ public class MemoryLogDestination implements LogDestination {
     private final List<TransactionCommand> commands = new ArrayList<>();
 
     @Override
-    public void write(TransactionCommand command) {
+    public synchronized void write(TransactionCommand command) {
         commands.add(Objects.requireNonNull(command, "Command is required"));
     }
 
     @Override
-    public List<TransactionCommand> readAll() {
+    public synchronized List<TransactionCommand> readAll() {
         return new ArrayList<>(commands);
     }
 
     @Override
-    public void clear() {
+    public synchronized void clear() {
         commands.clear();
     }
 
