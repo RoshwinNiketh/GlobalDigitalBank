@@ -1,4 +1,5 @@
 target/
+*.db
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -37,3 +38,13 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Faculty submission exclusions: activity documents ###
+/docs/
+
+### Faculty submission exclusions: AI/Codex guidance and metadata ###
+/AGENTS.md
+/AGENTS.local.md
+/.codex/
+**/.codex/
+PROJECT_STATE.md
